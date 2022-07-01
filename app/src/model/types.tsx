@@ -4,15 +4,18 @@
 */
 
 // Declare the columns we expect
-type DataColumns = 'coord_1' | 'coord_2' | 'prediction' | 'timestamp';
+export type DataColumns = '0' | '1' | 'prediction' | 'timestamp';
 
 // Declare the structure of each row in our data
 export interface DataRow {
     '0': number; // Numbered keys coerced to strings so will access these as strings
     '1': number;
     'prediction': string;
-    'timestamp': Date;
+    'timestamp': string; // Will convert to Date
 }
 
 // Bringing it all together as a type which should exactly match our DSVRowArray from d3
 export type DataArray = DataRow[] & {columns: Array<DataColumns>}
+
+// For applying filters
+export type DateFilter = {start:string, end:string};
