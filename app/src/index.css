@@ -1,0 +1,13 @@
+/* Tailwind classes */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Arima:wght@300;700&family=Roboto:wght@300&display=swap');
+
+/* Set default font */
+*{
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+}

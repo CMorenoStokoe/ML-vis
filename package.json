@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "node": "^18.4.0"
+  },
+  "devDependencies": {
+    "file-loader": "^6.2.0"
+  }
+}
