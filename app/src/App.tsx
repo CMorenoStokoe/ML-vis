@@ -26,8 +26,8 @@ const App = () => {
     useEffect(() => {
         // Use promises & d3 svg functions to parse local data
             Promise.all([
-                d3.csv('https://www.morenostok.io/liveData.csv'),
-                d3.csv('https://www.morenostok.io/refData.csv'),
+                d3.csv('liveData.csv'),
+                d3.csv('refData.csv'),
             ]).then((dataSets: DSVRowArray[]) => {
                 processData(dataSets)
             }).catch(function(err) {
