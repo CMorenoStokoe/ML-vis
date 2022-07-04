@@ -31,8 +31,7 @@ const App = () => {
                 d3.csv('liveData.csv'),
                 d3.csv('refData.csv'),
             ]).then((dataSets: DSVRowArray[]) => {
-                console.log(dataSets)
-                processData(dataSets)
+                processData(dataSets);
             }).catch(function(err) {
                 console.log('CRITICAL ERR: Failed to get data from CSV. Message:' + err) // Would throw error in a meaningful way in production
             })
