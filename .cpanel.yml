@@ -1,5 +1,5 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/morenost/public_html/ML-vis/
+    - export DEPLOYPATH=/home/morenost/public_html/mlvis/
     - /bin/cp -R app/build/* $DEPLOYPATH
