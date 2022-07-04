@@ -10,6 +10,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+//import refDataPath from './model/data/refData.csv'; // Filepaths...
+//import liveDataPath from './model/data/liveData.csv';
 // Note: Local file paths are dynamic for build/server deployment (using webpack file-loader)
 
 // Main app model
@@ -29,6 +31,7 @@ const App = () => {
                 d3.csv('liveData.csv'),
                 d3.csv('refData.csv'),
             ]).then((dataSets: DSVRowArray[]) => {
+                console.log(dataSets)
                 processData(dataSets)
             }).catch(function(err) {
                 console.log('CRITICAL ERR: Failed to get data from CSV. Message:' + err) // Would throw error in a meaningful way in production
