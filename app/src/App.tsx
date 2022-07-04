@@ -10,6 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faMagnifyingGlassChart } from '@fortawesome/free-solid-svg-icons';
 //import refDataPath from './model/data/refData.csv'; // Filepaths...
 //import liveDataPath from './model/data/liveData.csv';
 // Note: Local file paths are dynamic for build/server deployment (using webpack file-loader)
@@ -23,6 +24,7 @@ const App = () => {
     const [categoriesInData, setCategoriesInData] = useState<{'dates':Date[]; 'predictions': string[]}>(); // Categories for filtering
     const [range, setRange] = useState<{'0':{min:number,max:number}; '1':{min:number,max:number}}>(); // Maximum values for constant axes
     const [filters, setFilters] = useState<Filters>(); // Used to select data filters)
+    const [loaded, setLoaded] = useState<boolean>(false); // Loading
 
     // Start by getting data from local csv files
     useEffect(() => {
@@ -33,7 +35,7 @@ const App = () => {
             ]).then((dataSets: DSVRowArray[]) => {
                 processData(dataSets);
             }).catch(function(err) {
-                console.log('CRITICAL ERR: Failed to get data from CSV. Message:' + err) // Would throw error in a meaningful way in production
+                alert('Data not loaded, please reload the page and try again!') // Would throw error in a meaningful way in production
             })
             // Note: With truly live data we would repeat this useEffect when new data is available repeat this function when new data is available 
     }, []);
@@ -193,7 +195,7 @@ const App = () => {
         }
         catch(err) { console.log('Error applying filters', err)} 
         finally { 
-            console.log(currentDataView);
+            setLoaded(true);
             if(filteredData !== undefined && filteredRefData !== undefined ){
                 // Set filtered data as current data view
                 setCurrentDataView({
@@ -219,7 +221,7 @@ const App = () => {
 
     const currentView = ():JSX.Element => {
         switch(view){
-            case 'splash': return( <Splash onContinue={()=>{ setView('visualisation' )}}/> );
+            case 'splash': return( <Splash loaded={loaded} onContinue={()=>{ setView('visualisation' )}}/> );
             case 'visualisation': return(
                 <Visualisation currentDataView={currentDataView!}  // Coerce undefined typing with !
                     categoriesInData={categoriesInData!} range={ range! }
@@ -231,8 +233,9 @@ const App = () => {
 
     return (
         <div className='App h-full font-main'>
-            <header className='w-full p-4 flex flex-row justify-between items-center font-bold text-white bg-primary-shade'>
-                <p className='p-2 font-display text-4xl font-bold text-white'>
+            <header className='w-full p-3 flex flex-row justify-between items-center font-bold text-white bg-primary-shade'>
+                <p className='p-2 font-display text-2xl font-bold text-white'>
+                    <FontAwesomeIcon icon={faMagnifyingGlassChart} className='animate-pulse'/>
                     ML-vis
                     <span className='pl-2 text-lg font-light font-main'>by 
                     <a className='pl-1 text-blue-200 hover:text-blue-400' href='https://www.morenostok.io/' target='_blank'> 

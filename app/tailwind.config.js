@@ -7,15 +7,15 @@ module.exports = {
         extend: {
             fontFamily: {
                 'main': ['Roboto', 'sans-serif'],
-                'display': ['Arima', 'cursive']
+                'display': ['Asap', 'sans-serif']
             },
             colors:{
                 primary: {
-                    hue : '#A5BECC',
-                    shade : '#243A73'
+                    hue : '#d7edf9',
+                    shade : '#1f2a44'
                 } ,
                 accent: {
-                    hue: '#7C3E66',
+                    hue: '#7c3e58',
                 }
             }
         },

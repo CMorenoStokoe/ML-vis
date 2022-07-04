@@ -1,5 +1,0 @@
-- consider moving fitlers to left, 
-- fill legend circles
-- refs in stroke not fill
-- color cats constant
-- get rid of black blob

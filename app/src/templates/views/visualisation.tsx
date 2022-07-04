@@ -3,12 +3,8 @@ import React, { useRef, createRef, useEffect, useState, createElement } from 're
 import { DataRow, TooltipInfo, Filters, RefRow, DataBundle, DataView, DataPoint } from '../../model/types';
 import { DateSlider, Btn, Toggle, Dropdown } from '../components/controls'; // Components ...
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLightbulb, faFilter, faHandFist, faArrowPointer } from '@fortawesome/free-solid-svg-icons';
-import { faCircle } from '@fortawesome/free-regular-svg-icons';
-
-// Utility helper functions
-const getDistinct = (array:Array<string | number>) => array.filter((v, i, arr) => arr.indexOf(v) == i); // (value, index, array)
-const dateToISO = (d:Date):string => d.toISOString().slice(0, 10);
+import { faLightbulb, faFilter, faHandFist, faArrowPointer, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCircle as faCircleOutline } from '@fortawesome/free-regular-svg-icons';
 
 // Initialise a hook so we can draw and update our graph
 export const useScatterplot = (drawScatterFn: Function, dependencies:Array<any>) => {
@@ -55,6 +51,7 @@ const Graph = (props:{
     currentDataView: DataView;
     filters: Filters;
     range: {'0':{min:number,max:number}; '1':{min:number,max:number}};
+    colors:Record<string, string>;
 }):JSX.Element => {
     // Combine data
     const data:DataPoint[] = props.currentDataView.ref.map((d)=>{return{ 
@@ -63,23 +60,15 @@ const Graph = (props:{
             props.currentDataView.live.map((d)=>{return{ 
                 '0':d['0'], '1':d['1'], prediction:d.prediction, ref:false 
             }})
-        )
+    )
 
-    // Color each category in data
-    const colors:Record<string, string> = {};
-    getDistinct( 
-        props.currentDataView.live.map(d=>d.prediction)
-    ).forEach((prediction, i) => {
-        colors[prediction as string] = d3.schemeSet3[i];
-    })
     const [tooltip, setTooltip] = useState<TooltipInfo>({show:false, d:{'0':0, '1':0, 'prediction':'', ref:true}, pos:{x:0,y:0}});
-
     // Draw graph
     const svgRef = useScatterplot(
         (svg:any)=>{
         
         // Size graph and margins 
-        const margin = {top: 50, right: 50, bottom: 50, left: 50}, 
+        const margin = {top: 20, right: 50, bottom: 50, left: 50}, 
             width = 800 - margin.left - margin.right, 
             height = 600 - margin.top - margin.bottom;
 
@@ -94,7 +83,7 @@ const Graph = (props:{
             .range([0, width])
             .nice();
         let y = d3.scaleLinear()
-            .domain( [props.range['1'].min, props.range['1'].max] )
+            .domain( [props.range['1'].max, props.range['1'].min]  )
             .range([0, height])
             .nice();
 
@@ -111,20 +100,23 @@ const Graph = (props:{
         let exit = update.exit().remove();
 
         enter
-            .attr('class', (d:DataPoint) => d.prediction)
-            //.attr('fill', 'rgba(0,0,0,0)' )
-            .attr('fill', (d:DataPoint) => d.ref===true ? 'black' : colors[d.prediction])
-            //.attr('stroke-width', props.currentDataView.live.length < 50 ? 4 : 1)
-            .attr('r', props.currentDataView.live.length < 50 ? 10 : 2)
+            .attr('class', (d:DataPoint) => `${d.prediction.replace(' ','_')} ${d.ref ? 'ref' : 'live'}`)
+            .attr('fill', (d:DataPoint) => d.ref===true ? 'white' : props.colors[d.prediction])
+            .attr('stroke', (d:DataPoint) => d.ref===true ? 'black' : 'none')
+            .attr('r', (d:DataPoint) => {
+                if(d.ref) return 2
+                else return props.currentDataView.live.length < 50 ? 10 : 2
+            })
             .attr('cx', (d:DataPoint) => x( d['0'] ))
             .attr('cy', (d:DataPoint) => y( d['1'] ))
             // Tooltips
             .on('mouseover', (e:MouseEvent,d:DataPoint) => {
-                g.selectAll(`circle.${d.prediction}`).style('stroke', d.ref===true ? 'black' : colors[d.prediction])
+                g.selectAll('circle').style('opacity', '.15');
+                g.selectAll(`circle.${d.ref ? 'ref' : 'live'}`).style('opacity', '1');
                 setTooltip({ show:true, d:d, pos:{x: e.pageX, y: e.pageY} })
             })
             .on('mouseout',  (e:MouseEvent,d:DataPoint) => {
-                g.selectAll(`circle.${d.prediction}`).style('stroke', 'rgba(0,0,0,0)')
+                g.selectAll('circle').style('opacity', '1');
                 setTooltip({ show:false, d:d, pos:{x: e.pageX, y: e.pageY} })
             });
         exit.remove();
@@ -139,13 +131,13 @@ const Graph = (props:{
         g.append('text')
             .attr('class', 'x label')
             .attr('text-anchor', 'end')
-            .attr('x', width / 2 )
+            .attr('x', width / 1.85 )
             .attr('y', height + 40 )
             .text('Dimension 0');
         g.append('text')
             .attr('class', 'y label')
             .attr('text-anchor', 'end')
-            .attr('y', height - 60)
+            .attr('y', width - 260)
             .attr('x', -height/2.5)
             .attr('dy', -width / 1.5)
             .attr('transform', 'rotate(-90)')
@@ -167,7 +159,7 @@ const Graph = (props:{
 
     return(
         <div className='graph'>
-            <Tooltip colors={colors} t={tooltip} />
+            <Tooltip colors={props.colors} t={tooltip} />
             <svg ref={svgRef}>
                 <g className='plot-area'>
                     <g className='x-axis' />
@@ -200,25 +192,31 @@ export function Visualisation(props:{
 
     // Auto-title the graph
     const title = ():string => {
-        if(props.filters.date.active && props.filters.prediction.active) return 'Model performance against reference by date and category';
-        if(props.filters.prediction.active) return 'Model performance against reference by category';
-        if(props.filters.date.active) return 'Model performance against reference by date';
+        if(props.filters.date.active && props.filters.prediction.active) return 'Model performance by date and category';
+        if(props.filters.prediction.active) return 'Model performance by category';
+        if(props.filters.date.active) return 'Model performance by date';
         else return 'Mean model performance against reference';
     }
 
+    // Color each prediction category
+    const colors:Record<string, string> = {};
+    const categoryColorScheme = d3.schemeSpectral[ props.categoriesInData.predictions.length ];
+    props.categoriesInData.predictions.forEach((prediction, i) => {
+        colors[prediction as string] = categoryColorScheme[i];
+    });
+
     return(
-        <div className='px-4 flex flex-col justify-start items-center'>
-            <div className='p-4 flex flex-col justify-center items-center'>
+        <div className='h-auto flex flex-row'>
+            <div className='flex flex-col justify-start items-center'>
                 <p className='m-2 font-display font-bold text-3xl text-center'>{title()}</p>
-                <small><FontAwesomeIcon icon={faArrowPointer} /> Drag and scroll to pitch and zoom</small>
-                <Graph currentDataView={props.currentDataView} filters={props.filters} range={props.range} />
                 <div>
-                    Model predictions = <FontAwesomeIcon icon={faCircle} className='pr-2 text-primary-hue'/>
-                    Reference labels = <FontAwesomeIcon icon={faCircle}/>
+                    Model predictions = <FontAwesomeIcon icon={faCircle} className='pr-2 text-accent-hue'/>
+                    Reference labels = <FontAwesomeIcon icon={faCircleOutline} className='text-black'/>
                 </div>
+                <Graph currentDataView={props.currentDataView} filters={props.filters} range={props.range}  colors={colors} />
             </div>
-            <div className='p-4 w-full flex flex-col shadow border border-gray-100 rounded'>
-                <p className='font-display font-bold text-3xl self-left'>Filters</p>
+            <div className='p-4 w-full flex flex-col justify-start shadow bg-primary-hue'>
+                <p className='font-display font-bold text-3xl'>Filters</p>
                 <div className='flex flex-row items-center'>
                     <Toggle label='Filter by prediction' value='prediction' 
                         onChange={ handleEnableFilter } />
@@ -226,6 +224,7 @@ export function Visualisation(props:{
                         filters={ props.filters }
                         options={ props.categoriesInData.predictions }
                         onChange={ selectFilterHandler }
+                        colors={ colors }
                     /> 
                 </div>
                 <div className='flex flex-row  items-center'>
@@ -237,6 +236,7 @@ export function Visualisation(props:{
                         onChange={ selectFilterHandler  }
                     /> 
                 </div>
+                <small className='text-primary-shade'><FontAwesomeIcon icon={faArrowPointer} /> Hint: Drag and scroll to pitch and zoom</small>
             </div>
         </div>
     )

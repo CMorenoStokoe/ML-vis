@@ -1,12 +1,11 @@
 /* Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Arima:wght@300;700&family=Roboto:wght@300&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Asap:wght@700&family=Roboto:wght@300;700&display=swap');
 /* Tailwind classes */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Full screen */
-html, body, #root, .App, .App>div {
+html, body, #root, .App {
     height: 100%;
 }

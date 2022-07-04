@@ -9,5 +9,11 @@
 on the web (e.g., SEO, previews)
 
 # Instructions
-1) Navigate to app/build/
-2) Open index.html with any modern browser
+Run in development environment:
+    from ./
+    npm install
+    npm cd app
+    npm install
+    npm start
+
+Note: Requires node (tested on latest LTE)
