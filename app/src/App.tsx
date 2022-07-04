@@ -166,6 +166,7 @@ const App = () => {
 
     // Handles applying filters to the data
     const applyFilterHandler = ():void => {
+        console.log(currentDataView);
         const f:Filters = filters!;
 
         // Get filters
@@ -192,6 +193,7 @@ const App = () => {
         }
         catch(err) { console.log('Error applying filters', err)} 
         finally { 
+            console.log(currentDataView);
             if(filteredData !== undefined && filteredRefData !== undefined ){
                 // Set filtered data as current data view
                 setCurrentDataView({

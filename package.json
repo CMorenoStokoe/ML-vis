@@ -1,4 +1,5 @@
 {
+  "homepage": "./",
   "dependencies": {
     "@fortawesome/fontawesome-common-types": "^6.1.1",
     "@types/react-fontawesome": "^1.6.5",
