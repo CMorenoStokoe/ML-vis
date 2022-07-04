@@ -8,8 +8,6 @@ import {Visualisation} from './templates/views/visualisation';
 import {GenericError} from './templates/views/genericError';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import refDataPath from './model/data/refData.csv'; // Filepaths...
-import liveDataPath from './model/data/liveData.csv';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 // Note: Local file paths are dynamic for build/server deployment (using webpack file-loader)
@@ -28,8 +26,8 @@ const App = () => {
     useEffect(() => {
         // Use promises & d3 svg functions to parse local data
             Promise.all([
-                d3.csv(liveDataPath),
-                d3.csv(refDataPath),
+                d3.csv('https://www.morenostok.io/liveData.csv'),
+                d3.csv('https://www.morenostok.io/refData.csv'),
             ]).then((dataSets: DSVRowArray[]) => {
                 processData(dataSets)
             }).catch(function(err) {
