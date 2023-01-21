@@ -11,8 +11,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { faMagnifyingGlassChart } from '@fortawesome/free-solid-svg-icons';
-//import refDataPath from './model/data/refData.csv'; // Filepaths...
-//import liveDataPath from './model/data/liveData.csv';
+// import refDataPath from './model/data/refData.csv'; // Filepaths...
+// import liveDataPath from './model/data/liveData.csv';
 // Note: Local file paths are dynamic for build/server deployment (using webpack file-loader)
 
 // Main app model
